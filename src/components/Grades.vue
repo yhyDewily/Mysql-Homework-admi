@@ -54,7 +54,7 @@
             <v-tab-item>
                 <v-data-table
                         :headers="StudentGradesHeader"
-                        :items="StudentGrades"
+                        :items="showStuGrades"
                         item-key="id">
                     <template slot="items" slot-scope="props">
                         <td>{{ props.item.studentId }}</td>
@@ -66,7 +66,7 @@
                          </td>
                     </template>
                 </v-data-table>
-                <v-form v-model="valid">
+                <v-form v-model="valid" ref="changeGradeForm" lazy-validation>
                     <v-container v-show="changeGradesInfo.status">
                         <v-layout>
                             <v-flex
@@ -110,7 +110,7 @@
 export default {
   name: 'Grades',
   data: () => ({
-    valid: false,
+    valid: true,
     showgrades: false,
     showGradesName: null,
     IdRules: [
@@ -118,7 +118,6 @@ export default {
       (v) => (v && v.length >= 2) || '课程号长度应大于等于2',
       (v) => {
         var regex = /^S[0-9]+/
-        console.log(regex.test(v))
         if (regex.test(v) === true) {
           return true
         } else {
@@ -136,20 +135,10 @@ export default {
         }
       }
     ],
-    StudentGrades: [
-      {
-        studentId: 'S3',
-        grade: 88
-      },
-      {
-        studentId: 'S4',
-        grade: 88
-      },
-      {
-        studentId: 'S5',
-        grade: 88
-      }
-    ],
+    // 指定课程学生的成绩
+    showStuGrades: [],
+    // 所有学生的成绩
+    StudentGrades: [],
     StudentGradesHeader: [
       {
         text: '学号',
@@ -165,26 +154,8 @@ export default {
         sortable: false
       }
     ],
-    Courses: [
-      {
-        courseId: 'C1',
-        courseName: 'PASCAL',
-        courseCredit: 4,
-        teacherName: '刘红'
-      },
-      {
-        courseId: 'C2',
-        courseName: 'PASCAL',
-        courseCredit: 4,
-        teacherName: '刘红'
-      },
-      {
-        courseId: 'C3',
-        courseName: 'PASCAL',
-        courseCredit: 4,
-        teacherName: '刘红'
-      }
-    ],
+    // 所有课程
+    Courses: [],
     CourseHeaders: [
       {
         text: '课程编号',
@@ -203,31 +174,150 @@ export default {
         value: 'teacherName'
       }
     ],
+    // 修改或添加课程的信息
     changeGradesInfo: {
       isChange: false,
       status: false,
       courseId: null,
       studentId: null,
       grade: null
-    }
+    },
+    students: []
   }),
+  mounted: function () {
+    this.getAllCourses()
+    this.getAllStudentsCourse()
+    this.getAllStudentsId()
+  },
   methods: {
+    // 获取所有的学生成绩，减少从后台获取数据的次数
+    getAllStudentsCourse: function () {
+      this.$axios.get('/grades/students')
+        .then(response => {
+          console.log(response.data)
+          for (let i = 0; i < response.data.length; i++) {
+            this.StudentGrades.push({
+              studentId: response.data[i].sno,
+              courseId: response.data[i].cno,
+              grade: response.data[i].grade
+            })
+          }
+        })
+    },
+    getAllStudentsId: function () {
+      this.$axios.get('/grades/studentsId')
+        .then(response => {
+          for (let i = 0; i < response.data.length; i++) {
+            this.students.push({
+              studentId: response.data[i]
+            })
+          }
+        })
+    },
+    getAllCourses: function () {
+      this.$axios.get('/admin/course')
+        .then(response => {
+          for (let i = 0; i < response.data.length; i++) {
+            this.Courses.push({
+              courseId: response.data[i].cno,
+              courseName: response.data[i].cname,
+              courseCredit: response.data[i].credit,
+              teacherName: response.data[i].tname
+            })
+          }
+        })
+        .catch(error => {
+          window.alert(error)
+        })
+    },
     showGrades: function (courseId, courseName) {
-      console.log(courseId)
+      console.log(courseId, courseName)
       this.showgrades = true
+      // 把课程号先添加，方便之后修改
       this.changeGradesInfo.courseId = courseId
       this.showGradesName = courseName
+      this.showStuGrades = []
+      console.log(this.StudentGrades)
+      for (let i = 0; i < this.StudentGrades.length; i++) {
+        if (courseId === this.StudentGrades[i].courseId) {
+          this.showStuGrades.push({
+            studentId: this.StudentGrades[i].studentId,
+            grade: this.StudentGrades[i].grade
+          })
+        }
+      }
+      // this.$axios.post('/grades/getgrades', {
+      //   cno: courseId
+      // })
+      //   .then(response => {
+      //     this.StudentGrades = []
+      //     for (let i = 0; i < response.data.length; i++) {
+      //       this.StudentGrades.push({
+      //         studentId: response.data[i].sno,
+      //         grade: response.data[i].grade
+      //       })
+      //     }
+      //   })
+      //   .catch(error => {
+      //     window.alert(error)
+      //   })
     },
     showchangeGrades: function (studentId) {
       this.changeGradesInfo.status = true
       if (studentId !== 0) {
         this.changeGradesInfo.isChange = true
         this.changeGradesInfo.studentId = studentId
+      } else {
+        this.changeGradesInfo.studentId = null
+        this.changeGradesInfo.isChange = false
       }
-      console.log(studentId + '' + this.changeGradesInfo.courseId)
     },
     changeGrade: function (studentId, grade) {
-      console.log(studentId, grade)
+      // var _this = this
+      if (this.$refs.changeGradeForm.validate) {
+        var flag = false
+        for (let i = 0; i < this.students.length; i++) {
+          if (this.students[i].studentId === studentId) {
+            flag = true
+            break
+          }
+        }
+        if (flag === false) {
+          window.alert('该学号不存在')
+          return
+        }
+        let GradeInfo = JSON.stringify({
+          cno: this.changeGradesInfo.courseId,
+          sno: studentId,
+          grade: grade
+        })
+        this.$axios.post('/grades/update', GradeInfo)
+          .then(response => {
+            if (response.data.code === 200) {
+              window.alert(response.data.msg)
+              for (let i = 0; i < this.StudentGrades.length; i++) {
+                if (studentId === this.StudentGrades[i].studentId &&
+                  this.changeGradesInfo.courseId === this.StudentGrades[i].studentId) {
+                  this.StudentGrades[i].grade = grade
+                  break
+                }
+              }
+              for (let i = 0; i < this.showStuGrades.length; i++) {
+                if (studentId === this.showStuGrades[i].studentId) {
+                  this.showStuGrades[i].grade = grade
+                  break
+                }
+              }
+              this.changeGradesInfo.status = false
+              this.changeGradesInfo.studentId = null
+              this.changeGradesInfo.grade = null
+            } else {
+              window.alert(response.data.msg)
+            }
+          }).catch(error => {
+            window.alert(error)
+          })
+      }
     }
   }
 }

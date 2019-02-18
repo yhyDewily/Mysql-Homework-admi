@@ -52,7 +52,7 @@
                 <td>{{ props.item.teacherName }}</td>
                 <td>{{ props.item.dept }}</td>
                 <td>
-                    <v-btn icon @click="clearAddCourseInfo(props.item.courseId)">
+                    <v-btn icon @click="delCourse(props.item.courseId)">
                         <v-icon color="error">clear</v-icon>
                     </v-btn>
                 </td>
