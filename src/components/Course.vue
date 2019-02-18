@@ -76,7 +76,16 @@ export default {
     addRules: {
       courseIdRules: [
         (v) => !!v || '课程号不能为空',
-        (v) => (v && v.length >= 2) || '课程号长度应大于等于2'
+        (v) => (v && v.length >= 2) || '课程号长度应大于等于2',
+        (v) => {
+          var regex = /^C[0-9]+/
+          console.log(regex.test(v))
+          if (regex.test(v) === true) {
+            return true
+          } else {
+            return '课程号格式应为C+数字'
+          }
+        }
       ],
       courseNameRules: [
         (v) => !!v || '课程名不能为空'
