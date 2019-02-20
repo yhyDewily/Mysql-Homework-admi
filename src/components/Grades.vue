@@ -246,21 +246,6 @@ export default {
           })
         }
       }
-      // this.$axios.post('/grades/getgrades', {
-      //   cno: courseId
-      // })
-      //   .then(response => {
-      //     this.StudentGrades = []
-      //     for (let i = 0; i < response.data.length; i++) {
-      //       this.StudentGrades.push({
-      //         studentId: response.data[i].sno,
-      //         grade: response.data[i].grade
-      //       })
-      //     }
-      //   })
-      //   .catch(error => {
-      //     window.alert(error)
-      //   })
     },
     showchangeGrades: function (studentId) {
       this.changeGradesInfo.status = true
