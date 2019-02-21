@@ -53,23 +53,31 @@
         </v-menu>
       </v-toolbar>
       <v-footer color="indigo" app inset>
-        <span class="white--text">&copy; 2017</span>
+        <span class="white--text">&copy; 2019</span>
       </v-footer>
     </v-app>
   </div>
 </template>
 
 <script>
+import VueCookies from 'vue-cookies'
 export default {
   name: 'App',
   data: () => ({
     drawer: false,
     menu: false,
-    userID: '16121755'
+    userID: VueCookies.get('id')
   }),
+  mounted: function () {
+    this.getUserId()
+  },
   methods: {
     logout: function () {
-      console.log('注销')
+      VueCookies.remove('id')
+      this.$router.go(0)
+    },
+    getUserId: function () {
+      console.log(VueCookies.get('id'))
     }
   }
 }
