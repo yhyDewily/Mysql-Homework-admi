@@ -175,11 +175,12 @@ export default {
           console.log(response.data)
           if (response.data.code === 200) {
             window.alert(response.data.msg)
-            for (let i = 0; i < this.semesterCourses.length; i++) {
-              if (this.semesterCourses[i].courseId === courseId) {
-                this.semesterCourses.splice(i, 1)
-              }
-            }
+            this.$router.go(0)
+            // for (let i = 0; i < this.semesterCourses.length; i++) {
+            //   if (this.semesterCourses[i].courseId === courseId) {
+            //     this.semesterCourses.splice(i, 1)
+            //   }
+            // }
           } else {
             window.alert(response.data.msg)
           }
@@ -204,14 +205,15 @@ export default {
           .then(response => {
             if (response.data.code === 200) {
               window.alert(response.data.msg)
-              this.semesterCourses.push({
-                courseId: addCourseInfo.courseId,
-                courseName: addCourseInfo.courseName,
-                courseCredit: addCourseInfo.courseCredit,
-                dept: addCourseInfo.dept,
-                teacherName: addCourseInfo.teacherName
-              })
-              this.clearAddCourseInfo(addCourseInfo)
+              this.$router.go(0)
+              // this.semesterCourses.push({
+              //   courseId: addCourseInfo.courseId,
+              //   courseName: addCourseInfo.courseName,
+              //   courseCredit: addCourseInfo.courseCredit,
+              //   dept: addCourseInfo.dept,
+              //   teacherName: addCourseInfo.teacherName
+              // })
+              // this.clearAddCourseInfo(addCourseInfo)
             } else {
               window.alert(response.data.msg)
             }

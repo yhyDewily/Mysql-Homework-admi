@@ -228,15 +228,16 @@ export default {
           .then(response => {
             if (response.data.code === 200) {
               window.alert(response.data.msg)
-              this.students.push({
-                studentId: addStudentInfo.studentId,
-                studentName: addStudentInfo.studentName,
-                age: addStudentInfo.age,
-                sex: addStudentInfo.sex,
-                dept: addStudentInfo.dept,
-                logn: addStudentInfo.logn,
-                pswd: addStudentInfo.pswd
-              })
+              this.$router.go(0)
+              // this.students.push({
+              //   studentId: addStudentInfo.studentId,
+              //   studentName: addStudentInfo.studentName,
+              //   age: addStudentInfo.age,
+              //   sex: addStudentInfo.sex,
+              //   dept: addStudentInfo.dept,
+              //   logn: addStudentInfo.logn,
+              //   pswd: addStudentInfo.pswd
+              // })
             }
           })
       }
@@ -248,11 +249,12 @@ export default {
         .then(response => {
           if (response.data.code === 200) {
             window.alert(response.data.msg)
-            for (let i = 0; i < this.students.length; i++) {
-              if (studentId === this.students[i].studentId) {
-                this.students.splice(i, 1)
-              }
-            }
+            this.$router.go(0)
+            // for (let i = 0; i < this.students.length; i++) {
+            //   if (studentId === this.students[i].studentId) {
+            //     this.students.splice(i, 1)
+            //   }
+            // }
           } else {
             window.alert(response.data.msg)
           }

@@ -280,19 +280,20 @@ export default {
           .then(response => {
             if (response.data.code === 200) {
               window.alert(response.data.msg)
-              for (let i = 0; i < this.StudentGrades.length; i++) {
-                if (studentId === this.StudentGrades[i].studentId &&
-                  this.changeGradesInfo.courseId === this.StudentGrades[i].studentId) {
-                  this.StudentGrades[i].grade = grade
-                  break
-                }
-              }
-              for (let i = 0; i < this.showStuGrades.length; i++) {
-                if (studentId === this.showStuGrades[i].studentId) {
-                  this.showStuGrades[i].grade = grade
-                  break
-                }
-              }
+              this.$router.go(0)
+              // for (let i = 0; i < this.StudentGrades.length; i++) {
+              //   if (studentId === this.StudentGrades[i].studentId &&
+              //     this.changeGradesInfo.courseId === this.StudentGrades[i].studentId) {
+              //     this.StudentGrades[i].grade = grade
+              //     break
+              //   }
+              // }
+              // for (let i = 0; i < this.showStuGrades.length; i++) {
+              //   if (studentId === this.showStuGrades[i].studentId) {
+              //     this.showStuGrades[i].grade = grade
+              //     break
+              //   }
+              // }
               this.changeGradesInfo.status = false
               this.changeGradesInfo.studentId = null
               this.changeGradesInfo.grade = null
